@@ -1,5 +1,4 @@
 package com.example.devicevisionserver.controller;
-
 import com.example.devicevisionserver.model.DeviceData;
 import com.example.devicevisionserver.model.Response;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,28 +7,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api") // 统一接口前缀
+@RequestMapping("/api")
 public class DeviceController {
 
-    // 处理设备发送的图片数据请求
-    @PostMapping("/predict")
+    private static final String[] required_fields = {"username", "token", "deviceId", "imageData"};
+
+    @PostMapping("/receive")
     public Response handlePrediction(@RequestBody DeviceData requestData) {
-        // 1. 验证必要字段
-        if (requestData.getToken() == null || requestData.getToken().isEmpty()) {
-            return new Response(400, null, "缺少token字段");
+
+        StringBuilder missing = new StringBuilder();
+
+        if (requestData.getUsername() == null || requestData.getUsername().trim().isEmpty()) {
+            missing.append("username, ");
         }
-        if (requestData.getImageData() == null || requestData.getImageData().isEmpty()) {
-            return new Response(400, null, "缺少图片数据");
+        if (requestData.getToken() == null || requestData.getToken().trim().isEmpty()) {
+            missing.append("token, ");
+        }
+        if (requestData.getDeviceId() == null || requestData.getDeviceId().trim().isEmpty()) {
+            missing.append("deviceId, ");
+        }
+        if (requestData.getImageData() == null || requestData.getImageData().trim().isEmpty()) {
+            missing.append("imageData, ");
         }
 
-        String prediction = "cat"; // 模拟预测结果
-        double confidence = 0.95;  // 模拟置信度
 
-        // 3. 构造并返回响应
-        return new Response(
-                200,
-                new Response.Result(prediction, confidence),
-                "处理成功"
-        );
+        if (!missing.isEmpty()) {
+            String errorMsg = "缺少必填字段：" + missing.substring(0, missing.length() - 2);
+            return new Response(400, errorMsg);
+        }
+
+        return new Response(200, "JSON字段检测通过，所有必填字段都已包含");
     }
 }

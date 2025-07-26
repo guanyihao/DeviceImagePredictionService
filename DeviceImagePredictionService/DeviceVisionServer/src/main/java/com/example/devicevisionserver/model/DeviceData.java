@@ -8,7 +8,7 @@ public class DeviceData {
     private String deviceId;
     private String imageData;
 
-    // Getter和Setter（必须有，Spring才能自动解析JSON）
+    // Getter和Setter
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
